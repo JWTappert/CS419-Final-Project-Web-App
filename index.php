@@ -1,5 +1,5 @@
 <?php
-	include_once(Includes/db.php);
+	include_once("/Includes/db.php");
 ?>
 
 <!DOCTYPE html>
