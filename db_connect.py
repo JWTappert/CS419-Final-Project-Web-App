@@ -2,6 +2,6 @@ import MySQLdb
 
 def connection():
 	conn = MySQLdb.connect(host="localhost", user="root", passwd="password", db="heatMap")
-	c = conn.cursor()
+	cursor = conn.cursor()
 
-	return c, conn
+	return cursor, conn
