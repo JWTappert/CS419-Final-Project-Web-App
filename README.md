@@ -1,5 +1,5 @@
 # CS419-Final-Project-Web-App
-Contains the code for our web application that will be hosted on our Raspberry Pi.
+Contains the code for our web application that will be hosted on our Raspberry Pi. Works in conjunction with [this](https://github.com/JWTappert/CS419-Final-Project-Arduino) repository. 
 
 ## Required Packages
 - Some kind of package manager (we use [homebrew](http://brew.sh/))
