@@ -7,3 +7,4 @@ Contains the code for our web application that will be hosted on our Raspberry P
 - [PySerial](https://github.com/pyserial)
 - [MySQLdb](http://mysql-python.sourceforge.net/MySQLdb.html)
 - [Flask](http://flask.pocoo.org/)
+- [Google Charts](https://developers.google.com/chart/)
