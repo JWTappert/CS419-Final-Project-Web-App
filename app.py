@@ -39,7 +39,6 @@ def homepage():
 		runTotal0 = node0[n][1]
 		runTotal1 = node1[n][0]
 
-	
 	'''
 	for n in xrange(0, numrows):
 		if node1[n][0] == 666 or node1[n][0] == 0:
