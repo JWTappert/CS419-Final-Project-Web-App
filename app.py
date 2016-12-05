@@ -12,7 +12,7 @@ def homepage():
 		return(str(e))
 
 	#Build the google chart from data in the database
-	cursor.execute("SELECT time, temp FROM readings WHERE node_id=%s ORDER BY time DESC LIMIT 1440", (str(0)))
+	cursor.execute("SELECT time, temp FROM readings WHERE node_id=%s ORDER BY time ASC LIMIT 1440", (str(0)))
 	numrows = cursor.rowcount
 	node0 = cursor.fetchall()
 
@@ -20,14 +20,18 @@ def homepage():
 	tableData[0] = ['Time', 'Living Room', 'Bedroom']
 
 	for n in xrange(0, numrows):
+		if node0[n][1] == 666 or node0[n][1] == 0:
+			continue
 		tempList = [node0[n][0], node0[n][1]]
 		tableData[n+1] = tempList
 
-	cursor.execute("SELECT temp FROM readings WHERE node_id=%s ORDER BY time DESC LIMIT 1440", (str(1)))
+	cursor.execute("SELECT temp FROM readings WHERE node_id=%s ORDER BY time ASC LIMIT 1440", (str(1)))
 	numrows = cursor.rowcount
 	node1 = cursor.fetchall()
 
 	for n in xrange(0, numrows):
+		if node1[n][0] == 666 or node1[n][0] == 0:
+			continue
 		tableData[n+1].append(node1[n][0])
 
 	#Get current temps
