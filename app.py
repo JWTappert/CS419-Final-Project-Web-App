@@ -6,28 +6,36 @@ app = Flask(__name__)
 
 @app.route('/')
 def homepage():
+	#Connect to the database, throw exception if it fails
 	try:
 		cursor, conn = connection()
 	except Exception as e:
 		return(str(e))
 
 	#Build the google chart from data in the database
-	cursor.execute("SELECT time, temp FROM readings WHERE node_id=%s AND time > DATE_SUB(CURDATE(), INTERVAL 1 DAY)", (str(0)))
-	#cursor.execute("SELECT time, temp FROM readings WHERE node_id=%s ORDER BY time ASC LIMIT 1440", (str(0)))
-	numrows = cursor.rowcount
-	node0 = cursor.fetchall()
 
+	#query the db for last 24hours worth of data for sensor 1
+	cursor.execute("SELECT time, temp FROM readings WHERE node_id=%s AND time > DATE_SUB(CURDATE(), INTERVAL 1 DAY)", (str(0)))
+	#store the number of rows that are returned
+	numrows = cursor.rowcount
+	#save the massive tuple of data values
+	node0 = cursor.fetchall()
+	#repeat for node2
 	cursor.execute("SELECT temp FROM readings WHERE node_id=%s AND time > DATE_SUB(CURDATE(), INTERVAL 1 DAY)", (str(1)))
-	#cursor.execute("SELECT temp FROM readings WHERE node_id=%s ORDER BY time ASC LIMIT 1440", (str(1)))
 	node1 = cursor.fetchall()
 
+	#create an empty list to store the data for Google Charts API
 	tableData = [[] for _ in range(numrows+1)]
+	#first row is header information
 	tableData[0] = ['Time', 'Living Room', 'Bedroom']
 
-	runTotal0 = 0
-	runTotal1 = 0
-	avgTemp0 = 0
-	avgTemp1 = 0
+	#variables that are used to filter out garbage data
+	runTotal0 = 0 #gets the runnnin total of all temps from node 1
+	runTotal1 = 0 #get the running total of all temps from node 2
+	avgTemp0 = 0 #average temperature of node 1
+	avgTemp1 = 0 #average temperatre of node 2
+
+	#iterate over the tuple od data values, if there is any garbage data replace it with an average temperature
 
 	for n in xrange(0, numrows):
 		if node0[n][1] > 100 or node0[n][1] < 32:
@@ -39,31 +47,14 @@ def homepage():
 			avgTemp1 = runTotal1 / (n+1)
 		else:
 			avgTemp1 = 0 + node1[n][0]
-
+		#save a list of [timeStamp, temp1, temp2]
 		tempList = [node0[n][0], avgTemp0, avgTemp1]
+		#add it to the list of lists for the google chart
 		tableData[n+1] = tempList
+		#sum the total temps for each node
 		runTotal0 = runTotal0 + avgTemp0
 		runTotal1 = runTotal1 + avgTemp1
 
-	'''
-	for n in xrange(0, numrows):
-		if node0[n][1] == 666 or node0[n][1] == 0:
-			print "GOT GARBAGE in node0: " + str(node0[n][1])
-			avgTemp = 69.69 #runTotal0 / (n + 1)
-			print "avgTemp: " + str(avgTemp)
-			tempList = [node0[n][0], avgTemp, node1[n][0]]
-		elif node1[n][0] == 666 or node1[n][0] == 0:
-			print "GOT GARBAGE in node1: " + str(node1[n][0])
-			avgTemp = 69.69 #runTotal1 / (n + 1)
-			print "avgTemp: " + str(avgTemp)
-			tempList = [node0[n][0], node0[n][1], avgTemp]
-		else:
-			tempList = [node0[n][0], node0[n][1], node1[n][0]]
-		
-		tableData[n+1] = tempList
-		runTotal0 = runTotal0 + node0[n][1]
-		runTotal1 = runTotal1 + node1[n][0]
-	'''
 	#Get current temps
 	cursor.execute("SELECT temp, time FROM readings WHERE node_id=%s ORDER BY time DESC LIMIT 1", (str(0))) 
 	curr0 = cursor.fetchall()
@@ -80,4 +71,4 @@ def homepage():
 
 
 if __name__ == "__main__":
-	app.run(debug=True)
+	app.run()
