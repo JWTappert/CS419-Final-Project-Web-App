@@ -12,11 +12,13 @@ def homepage():
 		return(str(e))
 
 	#Build the google chart from data in the database
-	cursor.execute("SELECT time, temp FROM readings WHERE node_id=%s ORDER BY time ASC LIMIT 1440", (str(0)))
+	cursor.execute("SELECT time, temp FROM readings WHERE node_id=%s AND time > DATE_SUB(CURDATE(), INERVAL 1 DAY)", (str(0)))
+	#cursor.execute("SELECT time, temp FROM readings WHERE node_id=%s ORDER BY time ASC LIMIT 1440", (str(0)))
 	numrows = cursor.rowcount
 	node0 = cursor.fetchall()
 
-	cursor.execute("SELECT temp FROM readings WHERE node_id=%s ORDER BY time ASC LIMIT 1440", (str(1)))
+	cursor.execute("SELECT temp FROM readings WHERE node_id=%s AND time > DATE_SUB(CURDATE(), INTERVAL 1 DAY)", (str(1)))
+	#cursor.execute("SELECT temp FROM readings WHERE node_id=%s ORDER BY time ASC LIMIT 1440", (str(1)))
 	node1 = cursor.fetchall()
 
 	tableData = [[] for _ in range(numrows+1)]
@@ -39,14 +41,6 @@ def homepage():
 		runTotal0 = runTotal0 + node0[n][1]
 		runTotal1 = runTotal1 + node1[n][0]
 
-	
-	'''
-	for n in xrange(0, numrows):
-		if node1[n][0] == 666 or node1[n][0] == 0:
-			continue
-		tableData[n+1].append(node1[n][0])
-	'''
-
 	#Get current temps
 	cursor.execute("SELECT temp, time FROM readings WHERE node_id=%s ORDER BY time DESC LIMIT 1", (str(0))) 
 	curr0 = cursor.fetchall()
@@ -56,6 +50,8 @@ def homepage():
 
 	temp0 = curr0[0][0]
 	temp1 = curr1[0][0]
+
+	conn.close()
 
 	return render_template('index.html', temp0=temp0, temp1=temp1, data=tableData)
 
