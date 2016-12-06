@@ -26,21 +26,24 @@ def homepage():
 
 	runTotal0 = 0
 	runTotal1 = 0
+	avgTemp0 = 0
+	avgTemp1 = 0
 
 	for n in xrange(0, numrows):
-		if node0[n][1] == 666 or node0[n][1] == 0:
-			print "n: " + str(n)
-			runTotal0 = runTotal0 / (n+1)
+		if node0[n][1] > 100 or node0[n][1] < 32:
+			avgTemp0 = runTotal0 / (n+1)
 		else:
-			runTotal0 = 0 + node0[n][1]
+			avgTemp0 = 0 + node0[n][1]
 
-		if node1[n][0] == 666 or node1[n][0] == 0:
-			runTotal1 = runTotal1 / (n+1)
+		if node1[n][0] > 100 or node1[n][0] < 32:
+			avgTemp1 = runTotal1 / (n+1)
 		else:
-			runTotal1 = 0 + node1[n][0]
+			avgTemp1 = 0 + node1[n][0]
 
-		tempList = [node0[n][0], runTotal0, runTotal1]
+		tempList = [node0[n][0], avgTemp0, avgTemp1]
 		tableData[n+1] = tempList
+		runTotal0 = runTotal0 + avgTemp0
+		runTotal1 = runTotal1 + avgTemp1
 
 	'''
 	for n in xrange(0, numrows):
@@ -70,8 +73,6 @@ def homepage():
 
 	temp0 = curr0[0][0]
 	temp1 = curr1[0][0]
-
-	print tableData
 
 	conn.close()
 
